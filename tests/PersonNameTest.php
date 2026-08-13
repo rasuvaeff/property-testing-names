@@ -97,6 +97,26 @@ final class PersonNameTest
         new PersonName('John', '', 'Smith', Gender::Male);
     }
 
+    /**
+     * Initials must not follow `mb_internal_encoding()`: a host application is
+     * free to set it to a single-byte encoding, and a Cyrillic initial would
+     * then be cut mid-character into invalid UTF-8.
+     */
+    public function initialsIgnoreTheAmbientInternalEncoding(): void
+    {
+        $previous = mb_internal_encoding();
+
+        try {
+            mb_internal_encoding('ISO-8859-1');
+            $name = new PersonName('Иван', 'Иванович', 'Иванов', Gender::Male);
+
+            Assert::same($name->initialLast(), 'И. Иванов');
+            Assert::same($name->lastInitials(), 'Иванов И. И.');
+        } finally {
+            mb_internal_encoding($previous === false ? 'UTF-8' : $previous);
+        }
+    }
+
     public function genderCasesAreDeclaredInShrinkingOrder(): void
     {
         Assert::same(Gender::cases(), [Gender::Male, Gender::Female]);

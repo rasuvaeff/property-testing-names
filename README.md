@@ -49,16 +49,26 @@ composer require --dev rasuvaeff/property-testing-names
 
 ## Usage
 
-```php
-use Rasuvaeff\PropertyTesting\Names\Gender;
-use Rasuvaeff\PropertyTesting\Names\Names;
+Every factory returns an `ArbitraryInterface` — a *recipe* for values, not a
+value. The comments below show what each one generates:
 
-Names::first();                          // 'Ian', 'Emma', …
-Names::last(locale: 'ru');               // 'Попов', 'Иванова', …
-Names::first('ru', Gender::Female);      // 'Мария', 'Ольга', …
-Names::middle('ru');                     // 'Ивановна', 'Петрович', …
-Names::full('ru', middle: true);         // 'Иван Иванович Иванов'
-Names::person('ru', middle: true);       // a PersonName value object
+```php
+use Rasuvaeff\PropertyTesting\Names\Names;
+use Rasuvaeff\PropertyTesting\Names\Gender;
+
+$firstNames = Names::first();                     // 'Ian', 'Emma', …
+$surnames = Names::last(locale: 'ru');            // 'Попов', 'Иванова', …
+$femaleNames = Names::first('ru', Gender::Female); // 'Мария', 'Ольга', …
+$patronymics = Names::middle('ru');               // 'Ивановна', 'Петрович', …
+$displayNames = Names::full('ru', middle: true);  // 'Иван Иванович Иванов'
+$people = Names::person('ru', middle: true);      // PersonName objects
+```
+
+The runner draws from them; nothing is generated until it does. To see values
+while debugging, sample explicitly:
+
+```php
+Gen::sample($displayNames, 3, 6);   // fixed seed → the same three names every time
 ```
 
 Inside a property test the factories go into the generators method, exactly

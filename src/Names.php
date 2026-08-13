@@ -31,7 +31,7 @@ use Rasuvaeff\PropertyTesting\Names\Internal\Locales;
  *
  * @api
  */
-final class Names
+final readonly class Names
 {
     public const string DEFAULT_LOCALE = 'en';
 
@@ -71,10 +71,12 @@ final class Names
             self::genderArbitrary($gender),
             /** @return ArbitraryInterface<PersonName> */
             static function (Gender $drawn) use ($dataset, $middleNames): ArbitraryInterface {
-                /** @var ArbitraryInterface<non-empty-string|null> $middleArbitrary */
-                $middleArbitrary = isset($middleNames[$drawn->name])
-                    ? Gen::elements($middleNames[$drawn->name])
-                    : Gen::constant(null);
+                // A one-entry pool of null rather than Gen::constant(null):
+                // ArbitraryInterface's TValue is invariant, so the union of two
+                // concrete arbitraries would need a widening annotation that no
+                // analyser accepts. One pool, one type, same generated values.
+                /** @var non-empty-list<non-empty-string|null> $middlePool */
+                $middlePool = $middleNames[$drawn->name] ?? [null];
 
                 // Nested rather than a Gen::tuple(): a tuple erases its element
                 // types to mixed, which would force type assertions back into
@@ -83,7 +85,7 @@ final class Names
                     Gen::elements($dataset->firstNames($drawn)),
                     /** @return ArbitraryInterface<PersonName> */
                     static fn(string $first): ArbitraryInterface => Gen::flatMap(
-                        $middleArbitrary,
+                        Gen::elements($middlePool),
                         /** @return ArbitraryInterface<PersonName> */
                         static fn(?string $middle): ArbitraryInterface => Gen::map(
                             Gen::elements($dataset->lastNames($drawn)),

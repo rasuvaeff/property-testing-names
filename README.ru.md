@@ -49,16 +49,26 @@ composer require --dev rasuvaeff/property-testing-names
 
 ## Использование
 
-```php
-use Rasuvaeff\PropertyTesting\Names\Gender;
-use Rasuvaeff\PropertyTesting\Names\Names;
+Каждая фабрика возвращает `ArbitraryInterface` — *рецепт* значений, а не
+значение. В комментариях ниже — то, что каждая из них порождает:
 
-Names::first();                          // 'Ian', 'Emma', …
-Names::last(locale: 'ru');               // 'Попов', 'Иванова', …
-Names::first('ru', Gender::Female);      // 'Мария', 'Ольга', …
-Names::middle('ru');                     // 'Ивановна', 'Петрович', …
-Names::full('ru', middle: true);         // 'Иван Иванович Иванов'
-Names::person('ru', middle: true);       // value object PersonName
+```php
+use Rasuvaeff\PropertyTesting\Names\Names;
+use Rasuvaeff\PropertyTesting\Names\Gender;
+
+$firstNames = Names::first();                     // 'Ian', 'Emma', …
+$surnames = Names::last(locale: 'ru');            // 'Попов', 'Иванова', …
+$femaleNames = Names::first('ru', Gender::Female); // 'Мария', 'Ольга', …
+$patronymics = Names::middle('ru');               // 'Ивановна', 'Петрович', …
+$displayNames = Names::full('ru', middle: true);  // 'Иван Иванович Иванов'
+$people = Names::person('ru', middle: true);      // объекты PersonName
+```
+
+Тянет из них раннер; до этого момента ничего не генерируется. Посмотреть
+значения при отладке можно явной выборкой:
+
+```php
+Gen::sample($displayNames, 3, 6);   // фиксированный seed → те же три имени каждый раз
 ```
 
 В property-тесте фабрики уходят в метод-генератор — ровно как у ядра:

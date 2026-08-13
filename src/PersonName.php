@@ -73,10 +73,14 @@ final readonly class PersonName
     }
 
     /**
+     * The encoding is explicit: without it `mb_substr()` follows
+     * `mb_internal_encoding()`, which the host application can change globally —
+     * a Cyrillic initial would then be cut mid-character.
+     *
      * @return non-empty-string
      */
     private function initialOf(string $part): string
     {
-        return mb_substr($part, start: 0, length: 1) . '.';
+        return mb_substr($part, start: 0, length: 1, encoding: 'UTF-8') . '.';
     }
 }
