@@ -1,0 +1,111 @@
+# property-testing-names
+
+Person-name arbitraries (`en`, `ru`) for `rasuvaeff/property-testing-core`.
+Namespace: `Rasuvaeff\PropertyTesting\Names`.
+
+Install:
+
+```
+composer require --dev rasuvaeff/property-testing-names
+```
+
+## Rules
+
+- PHP 8.3–8.5, `ext-mbstring`, core `^0.1 || ^0.2`.
+- There is **no** `Gen::name()`. The entry point is the `Names::` facade; core
+  keeps only format-derived generators (`Gen::email()`, `Gen::uuid()`, …).
+- Registered locales: `en`, `ru`. Anything else — including `'EN'`, `'en-US'`,
+  `'en '` — throws `InvalidArgumentException` when the arbitrary is built.
+- Middle names (patronymics) exist for `ru` only. `Names::middle('en')`,
+  `Names::person(middle: true)` and `Names::full(middle: true)` on `en` throw
+  `InvalidArgumentException: Locale "en" has no middle-name (patronymic) dataset`.
+- `Names::first()` and `Names::last()` are independent draws and do not agree on
+  gender. Use `Names::person()` when the parts must agree (`ru` inflects
+  surnames and patronymics).
+- Values shrink toward the earliest (shortest) dataset entries.
+- Data is synthetic; dataset changes ship as minor releases because they change
+  what a given seed produces.
+- `Rasuvaeff\PropertyTesting\Names\Internal\*` is `@internal`: no custom
+  datasets, no runtime locale registration.
+
+## API
+
+```php
+use Rasuvaeff\PropertyTesting\Gen;
+use Rasuvaeff\PropertyTesting\Names\Gender;
+use Rasuvaeff\PropertyTesting\Names\Names;
+use Rasuvaeff\PropertyTesting\Names\PersonName;
+
+// ArbitraryInterface<non-empty-string>
+Names::first(string $locale = 'en', ?Gender $gender = null);
+Names::last(string $locale = 'en', ?Gender $gender = null);
+Names::middle(string $locale, ?Gender $gender = null);          // locale required
+Names::full(string $locale = 'en', ?Gender $gender = null, bool $middle = false);
+
+// ArbitraryInterface<PersonName>
+Names::person(string $locale = 'en', ?Gender $gender = null, bool $middle = false);
+
+Names::DEFAULT_LOCALE;   // 'en'
+Gender::Male; Gender::Female;   // declaration order = shrink order
+```
+
+`PersonName` (`final readonly`): `$first`, `?$middle`, `$last`, `$gender`.
+
+```php
+$p = new PersonName('Иван', 'Иванович', 'Иванов', Gender::Male);
+$p->full();          // 'Иван Иванович Иванов'   (en: 'John Smith')
+$p->initialLast();   // 'И. Иванов'              (en: 'J. Smith')
+$p->lastInitials();  // 'Иванов И. И.'           (en: 'Smith J.')
+```
+
+The constructor throws `InvalidArgumentException` on an empty `$first`/`$last`
+and on `$middle === ''` (use `null` for "no middle name").
+
+## Use in a property test (Testo)
+
+```php
+use Rasuvaeff\PropertyTesting\ArbitraryInterface;
+use Rasuvaeff\PropertyTesting\Names\Gender;
+use Rasuvaeff\PropertyTesting\Names\Names;
+use Rasuvaeff\PropertyTesting\Property;
+use Testo\Assert;
+
+#[Property(runs: 300)]
+public function displayNameFitsTheColumn(string $first, string $last): void
+{
+    Assert::true(mb_strlen((new Profile($first, $last))->displayName()) <= 255);
+}
+
+/** @return array<string, ArbitraryInterface> */
+public static function displayNameFitsTheColumnGenerators(): array
+{
+    return [
+        'first' => Names::first('ru', Gender::Female),
+        'last' => Names::last('ru', Gender::Female),
+    ];
+}
+```
+
+## Composition with core generators
+
+```php
+// Address derived from a given name.
+Gen::map(
+    Gen::tuple(Names::first('en'), Gen::elements(['@example.com', '@example.org'])),
+    static fn (array $p): string => mb_strtolower((string) $p[0]) . (string) $p[1],
+);
+
+// A display form the value object does not provide.
+Gen::map(Names::person('ru'), static fn (PersonName $p): string => $p->last . ', ' . $p->first);
+
+// Optional names, collections of names.
+Gen::nullable(Names::last('ru'));
+Gen::arrayOf(Names::full('en'));
+```
+
+## Eager sampling (debugging only)
+
+```php
+Gen::sample(Names::full('ru', middle: true), 3, 6);   // fixed seed → reproducible
+Gen::sampleShrinks(Names::person('ru'), 11);          // value + first shrink candidates
+```
