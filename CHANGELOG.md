@@ -1,5 +1,22 @@
 # Changelog
 
+## Unreleased
+
+- The `ru` lists are now ordered by length throughout (stable within a
+  length; inflected pairs keep their alignment), so shrinking really moves
+  toward the shortest entry as documented — `Ульяна` no longer shrinks into
+  `Татьяна`. A given seed produces different `ru` values than before.
+- `PersonName` declares its parts as `non-empty-string` in psalm types, so
+  `Gen::forClass(PersonName::class)` builds instances the constructor
+  accepts instead of throwing on an empty part.
+- CI: the backward-compatibility step tolerates a break declared by a
+  higher 0.x minor in `CHANGELOG.md` (template of 2026-08-15), `release.yml`
+  validates the tag against `master` before publishing, and `zizmor.yml`
+  audits the workflows. `infection/infection` is required as `^0.35`.
+- Requires `rasuvaeff/property-testing-core` `^0.4` (was `^0.1 || … || ^0.4`):
+  the older lines have no `Gen::forClass()`, which the package now tests
+  itself against.
+
 All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),

@@ -17,18 +17,32 @@ namespace Rasuvaeff\PropertyTesting\Names;
  */
 final readonly class PersonName
 {
+    /**
+     * @param non-empty-string $first
+     * @param ?non-empty-string $middle
+     * @param non-empty-string $last
+     */
     public function __construct(
         public string $first,
         public ?string $middle,
         public string $last,
         public Gender $gender,
     ) {
-        if ($first === '' || $last === '') {
-            throw new \InvalidArgumentException('Person name parts must not be empty');
-        }
+        // The psalm types promise non-empty parts; the runtime guard is for
+        // callers static analysis does not see, and lives behind a plain
+        // string parameter so the promise and the check do not contradict.
+        self::guardNotEmpty($first, 'Person name parts must not be empty');
+        self::guardNotEmpty($last, 'Person name parts must not be empty');
 
-        if ($middle === '') {
-            throw new \InvalidArgumentException('Middle name must be null or a non-empty string');
+        if ($middle !== null) {
+            self::guardNotEmpty($middle, 'Middle name must be null or a non-empty string');
+        }
+    }
+
+    private static function guardNotEmpty(string $part, string $message): void
+    {
+        if ($part === '') {
+            throw new \InvalidArgumentException($message);
         }
     }
 

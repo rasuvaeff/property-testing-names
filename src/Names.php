@@ -83,12 +83,19 @@ final readonly class Names
                 // the mapping closure.
                 return Gen::flatMap(
                     Gen::elements($dataset->firstNames($drawn)),
-                    /** @return ArbitraryInterface<PersonName> */
+                    /**
+                     * @param non-empty-string $first
+                     * @return ArbitraryInterface<PersonName>
+                     */
                     static fn(string $first): ArbitraryInterface => Gen::flatMap(
                         Gen::elements($middlePool),
-                        /** @return ArbitraryInterface<PersonName> */
+                        /**
+                         * @param ?non-empty-string $middle
+                         * @return ArbitraryInterface<PersonName>
+                         */
                         static fn(?string $middle): ArbitraryInterface => Gen::map(
                             Gen::elements($dataset->lastNames($drawn)),
+                            /** @param non-empty-string $last */
                             static fn(string $last): PersonName => new PersonName(
                                 first: $first,
                                 middle: $middle,

@@ -122,13 +122,22 @@ final class LocalesTest
      * the value it replaced.
      */
     #[DataProvider('shrinkOrderProvider')]
-    public function shortestEntriesComeFirst(Dataset $dataset, Gender $gender): void
+    public function entriesNeverGetShorterDownTheList(Dataset $dataset, Gender $gender): void
     {
-        foreach ([$dataset->firstNames($gender), $dataset->lastNames($gender)] as $names) {
-            $head = array_slice($names, 0, 10);
-            $tail = array_slice($names, -10);
+        $lists = [$dataset->firstNames($gender), $dataset->lastNames($gender)];
 
-            Assert::true(max(array_map(mb_strlen(...), $head)) <= min(array_map(mb_strlen(...), $tail)));
+        // Patronymics are index-aligned male/female pairs of one stem, ordered
+        // by the male form; the female forms follow the same stems.
+        if ($dataset->hasMiddleNames() && $gender === Gender::Male) {
+            $lists[] = $dataset->middleNames($gender);
+        }
+
+        foreach ($lists as $names) {
+            $lengths = array_map(mb_strlen(...), $names);
+            $sorted = $lengths;
+            sort($sorted);
+
+            Assert::same($lengths, $sorted);
         }
     }
 
