@@ -1,6 +1,6 @@
 # Changelog
 
-## Unreleased
+## 0.2.0 — 2026-09-02
 
 - The `ru` lists are now ordered by length throughout (stable within a
   length; inflected pairs keep their alignment), so shrinking really moves
@@ -13,9 +13,9 @@
   higher 0.x minor in `CHANGELOG.md` (template of 2026-08-15), `release.yml`
   validates the tag against `master` before publishing, and `zizmor.yml`
   audits the workflows. `infection/infection` is required as `^0.35`.
-- Requires `rasuvaeff/property-testing-core` `^0.4` (was `^0.1 || … || ^0.4`):
+- Requires `rasuvaeff/property-testing-core` `^0.4 || ^0.5` (was `^0.1 || … || ^0.4`):
   the older lines have no `Gen::forClass()`, which the package now tests
-  itself against.
+  itself against; 0.5 is the line the adapters moved to.
 
 All notable changes to this project will be documented in this file.
 
