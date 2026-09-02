@@ -1,5 +1,9 @@
 # Changelog
 
+## Unreleased
+
+- Allows `rasuvaeff/property-testing-core` `^0.6` beside `^0.4 || ^0.5`; the dataset draws are `Gen::elements()` over fixed lists, which 0.6 leaves untouched.
+
 ## 0.2.0 — 2026-09-02
 
 - The `ru` lists are now ordered by length throughout (stable within a
