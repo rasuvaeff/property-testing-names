@@ -12,6 +12,7 @@ use Rasuvaeff\PropertyTesting\Names\Internal\Locales;
 use Rasuvaeff\PropertyTesting\Names\Names;
 use Rasuvaeff\PropertyTesting\Names\PersonName;
 use Rasuvaeff\PropertyTesting\Property;
+use Rasuvaeff\PropertyTesting\Random;
 use Testo\Assert;
 use Testo\Assert\ExpectException;
 use Testo\Codecov\Covers;
@@ -67,6 +68,26 @@ final class PersonNameTest
             'М. Иванова',
             'Иванова М. И.',
         ];
+    }
+
+    public function isBuildableFromItsSignatureByForClass(): void
+    {
+        // The psalm types promise non-empty parts, so forClass draws from
+        // non-empty generators and the constructor accepts every instance —
+        // including while shrinking, where a refused candidate would be lost.
+        $random = new Random(11);
+        $arbitrary = Gen::forClass(PersonName::class);
+
+        for ($i = 0; $i < 200; ++$i) {
+            $node = $arbitrary->generate($random);
+
+            Assert::instanceOf($node->value, PersonName::class);
+            Assert::true($node->value->first !== '' && $node->value->last !== '' && $node->value->middle !== '');
+
+            foreach ($node->shrinks() as $candidate) {
+                Assert::instanceOf($candidate->value, PersonName::class);
+            }
+        }
     }
 
     public function keepsPartsAndGenderAsGiven(): void

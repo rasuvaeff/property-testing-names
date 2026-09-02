@@ -77,9 +77,9 @@ final class DatasetTest
     }
 
     /**
-     * A half-filled dataset must fail per gender, not silently return the one
-     * list it happens to have: `middleNames(null)` would otherwise produce
-     * male-only patronymics for female names.
+     * A half-filled dataset fails for the gender it lacks and answers for the
+     * one it has; `middleNames(null)` merges whatever exists, so on such a
+     * dataset it is the male list alone.
      */
     public function middleNamesFailForTheMissingGenderOnly(): void
     {
