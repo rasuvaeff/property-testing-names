@@ -1,6 +1,6 @@
 # Changelog
 
-## Unreleased
+## 0.2.1 — 2026-09-03
 
 - Allows `rasuvaeff/property-testing-core` `^0.6` beside `^0.4 || ^0.5`; the dataset draws are `Gen::elements()` over fixed lists, which 0.6 leaves untouched.
 
