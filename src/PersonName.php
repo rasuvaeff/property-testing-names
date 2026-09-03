@@ -31,15 +31,15 @@ final readonly class PersonName
         // The psalm types promise non-empty parts; the runtime guard is for
         // callers static analysis does not see, and lives behind a plain
         // string parameter so the promise and the check do not contradict.
-        self::guardNotEmpty($first, 'Person name parts must not be empty');
-        self::guardNotEmpty($last, 'Person name parts must not be empty');
+        $this->guardNotEmpty($first, 'Person name parts must not be empty');
+        $this->guardNotEmpty($last, 'Person name parts must not be empty');
 
         if ($middle !== null) {
-            self::guardNotEmpty($middle, 'Middle name must be null or a non-empty string');
+            $this->guardNotEmpty($middle, 'Middle name must be null or a non-empty string');
         }
     }
 
-    private static function guardNotEmpty(string $part, string $message): void
+    private function guardNotEmpty(string $part, string $message): void
     {
         if ($part === '') {
             throw new \InvalidArgumentException($message);
