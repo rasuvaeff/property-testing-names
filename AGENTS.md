@@ -13,7 +13,7 @@ display forms; `Gender` is a two-case enum. Everything under
 per-locale data classes — is `@internal`.
 
 The package depends on `rasuvaeff/property-testing-core`
-(`^0.1 || ^0.2 || ^0.3 || ^0.4`) and
+(`^0.4 || ^0.5 || ^0.6`) and
 composes only its public API: `Gen::elements()`, `tuple()`, `map()`,
 `flatMap()`, `enum()`, `constant()`.
 

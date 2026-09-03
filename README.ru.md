@@ -39,7 +39,7 @@
 
 - PHP 8.3 – 8.5
 - `ext-mbstring`
-- `rasuvaeff/property-testing-core` `^0.1 || ^0.2 || ^0.3 || ^0.4`
+- `rasuvaeff/property-testing-core` `^0.4 || ^0.5 || ^0.6`
 
 ## Установка
 
