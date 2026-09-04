@@ -56,6 +56,28 @@ final class DatasetTest
         Assert::same($this->dataset->middleNames(null), ['Omovich', 'Omovna']);
     }
 
+    public function anUngenderedPoolDropsTheEntriesTheTwoListsShare(): void
+    {
+        // A locale that hands one list to both genders — `en` surnames — would
+        // otherwise offer every entry twice. Picking is uniform over the index,
+        // so that is a silent doubling of the entry's probability, the very
+        // defect each individual list is checked against.
+        $shared = new Dataset(
+            locale: 'xx',
+            maleFirstNames: ['Om', 'Sam'],
+            femaleFirstNames: ['Fa', 'Sam'],
+            maleLastNames: ['Mos', 'Kim'],
+            femaleLastNames: ['Mos', 'Kim'],
+            maleMiddleNames: ['Omovich', 'Samich'],
+            femaleMiddleNames: ['Omovna', 'Samich'],
+        );
+
+        // First occurrence wins, so the shortest-first order survives.
+        Assert::same($shared->firstNames(null), ['Om', 'Sam', 'Fa']);
+        Assert::same($shared->lastNames(null), ['Mos', 'Kim']);
+        Assert::same($shared->middleNames(null), ['Omovich', 'Samich', 'Omovna']);
+    }
+
     public function reportsMiddleNameSupport(): void
     {
         Assert::true($this->dataset->hasMiddleNames());

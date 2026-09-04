@@ -46,7 +46,7 @@ final readonly class Dataset
         return match ($gender) {
             Gender::Male => $this->maleFirstNames,
             Gender::Female => $this->femaleFirstNames,
-            null => array_merge($this->maleFirstNames, $this->femaleFirstNames),
+            null => self::pool([...$this->maleFirstNames, ...$this->femaleFirstNames]),
         };
     }
 
@@ -58,7 +58,7 @@ final readonly class Dataset
         return match ($gender) {
             Gender::Male => $this->maleLastNames,
             Gender::Female => $this->femaleLastNames,
-            null => array_merge($this->maleLastNames, $this->femaleLastNames),
+            null => self::pool([...$this->maleLastNames, ...$this->femaleLastNames]),
         };
     }
 
@@ -70,7 +70,7 @@ final readonly class Dataset
         $names = match ($gender) {
             Gender::Male => $this->maleMiddleNames,
             Gender::Female => $this->femaleMiddleNames,
-            null => array_merge($this->maleMiddleNames, $this->femaleMiddleNames),
+            null => [...$this->maleMiddleNames, ...$this->femaleMiddleNames],
         };
 
         if ($names === []) {
@@ -79,11 +79,30 @@ final readonly class Dataset
             );
         }
 
-        return $names;
+        return self::pool($names);
     }
 
     public function hasMiddleNames(): bool
     {
         return $this->maleMiddleNames !== [] && $this->femaleMiddleNames !== [];
+    }
+
+    /**
+     * The pool a generator picks from, with duplicates removed.
+     *
+     * Picking is uniform over the index, so an entry present twice is an entry
+     * with twice the probability — the defect every single list is checked
+     * against. Merging two lists reintroduces it: `en` hands the same surname
+     * list to both genders, so the unfiltered pool held all 100 surnames
+     * twice. First occurrence wins, which keeps the shortest-first order the
+     * shrinker descends through.
+     *
+     * @param non-empty-list<non-empty-string> $names
+     *
+     * @return non-empty-list<non-empty-string>
+     */
+    private static function pool(array $names): array
+    {
+        return array_values(array_unique($names));
     }
 }
