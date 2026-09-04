@@ -71,7 +71,7 @@ final class DatasetTest
             femaleFirstNames: ['Sam', 'Fa'],
             maleLastNames: ['Mos', 'Kim'],
             femaleLastNames: ['Mos', 'Lee'],
-            maleMiddleNames: ['Omovich', 'Samich'],
+            maleMiddleNames: ['Omovich', 'Petrovich', 'Samich'],
             femaleMiddleNames: ['Samich', 'Omovna'],
         );
 
@@ -79,7 +79,7 @@ final class DatasetTest
         // result is a list — not the gapped keys array_unique() leaves behind.
         Assert::same($shared->firstNames(null), ['Om', 'Sam', 'Fa']);
         Assert::same($shared->lastNames(null), ['Mos', 'Kim', 'Lee']);
-        Assert::same($shared->middleNames(null), ['Omovich', 'Samich', 'Omovna']);
+        Assert::same($shared->middleNames(null), ['Omovich', 'Petrovich', 'Samich', 'Omovna']);
     }
 
     public function reportsMiddleNameSupport(): void
