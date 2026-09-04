@@ -1,6 +1,6 @@
 # Changelog
 
-## Unreleased
+## 0.3.1 — 2026-09-04
 
 - Drawing without a gender no longer offers an entry that both lists hold
   twice. `Names::last('en')` picked from the 100 surnames listed twice, because
