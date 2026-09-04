@@ -1,5 +1,12 @@
 # Changelog
 
+## Unreleased
+
+- Drawing without a gender no longer offers an entry that both lists hold
+  twice. `Names::last('en')` picked from the 100 surnames listed twice, because
+  `en` hands one list to both genders; picking is uniform over the index, so
+  that was a silent doubling of every surname's weight.
+
 ## 0.3.0 — 2026-09-04
 
 - `ru` female patronymics are ordered by length like every other list, so a

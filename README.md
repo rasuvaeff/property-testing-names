@@ -128,6 +128,10 @@ Gen::map(Names::person(), static fn (PersonName $p): string => $p->last . ', ' .
 | `en` | 50 male + 50 female | 100, shared by both genders | — |
 | `ru` | 50 male + 50 female | 50 + 50, index-aligned pairs | 40 + 40, the same stems in both lists |
 
+Omitting the gender draws from the two lists merged, and the merge drops what
+they share: `Names::last('en')` picks from 100 surnames, not from the same 100
+listed twice. Uniform picking makes a duplicated entry a doubled probability.
+
 An unregistered locale raises `InvalidArgumentException` when the arbitrary is
 **built**, not when it first generates a value; the same is true for asking
 `en` for middle names. Locale tags are matched literally: `'EN'`, `'en-US'` and

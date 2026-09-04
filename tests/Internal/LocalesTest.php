@@ -66,8 +66,11 @@ final class LocalesTest
         Assert::same(count($dataset->maleMiddleNames), count($dataset->femaleMiddleNames));
 
         foreach ($dataset->femaleLastNames as $index => $surname) {
-            Assert::true(str_ends_with($surname, 'а'));
-            Assert::notSame($surname, $dataset->maleLastNames[$index]);
+            // The class documents the two lists as index-aligned pairs of one
+            // stem, and `person()` spells a family from that pairing. Checking
+            // only the ending and the difference would pass on a permutation of
+            // two female entries, which would marry the wrong pair.
+            Assert::same($surname, $dataset->maleLastNames[$index] . 'а');
         }
 
         foreach ($dataset->maleLastNames as $surname) {
@@ -84,6 +87,32 @@ final class LocalesTest
         foreach ($dataset->maleMiddleNames as $patronymic) {
             Assert::true(str_ends_with($patronymic, 'ич'));
         }
+    }
+
+    #[DataProvider('ungenderedPoolProvider')]
+    public function anUngenderedPoolHasNoDuplicates(string $locale, string $kind, array $names, int $expectedCount): void
+    {
+        // The gendered lists are checked one by one below; this is the pool a
+        // caller who passes no gender actually draws from. `en` hands the same
+        // surname list to both genders, so an unfiltered merge held all 100
+        // surnames twice and doubled every surname's weight.
+        Assert::same(count(array_unique($names)), count($names), sprintf('%s/%s has duplicates', $locale, $kind));
+        Assert::same(count($names), $expectedCount, sprintf('%s/%s changed size', $locale, $kind));
+    }
+
+    /**
+     * @return iterable<string, array{string, string, list<string>, int}>
+     */
+    public static function ungenderedPoolProvider(): iterable
+    {
+        foreach (['en' => 100, 'ru' => 100] as $locale => $surnames) {
+            $dataset = Locales::get($locale);
+
+            yield $locale . ' first names' => [$locale, 'first names', $dataset->firstNames(null), 100];
+            yield $locale . ' last names' => [$locale, 'last names', $dataset->lastNames(null), $surnames];
+        }
+
+        yield 'ru patronymics' => ['ru', 'patronymics', Locales::get('ru')->middleNames(null), 80];
     }
 
     /**
