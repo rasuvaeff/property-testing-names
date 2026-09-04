@@ -1,5 +1,16 @@
 # Changelog
 
+## Unreleased
+
+- `ru` female patronymics are ordered by length like every other list, so a
+  counterexample carrying one shrinks toward a shorter name instead of a longer
+  one. The two patronymic lists still hold the same 40 stems but are no longer
+  index-aligned — a female form does not grow from the male one by a constant
+  suffix, so the two invariants could not both hold. This changes the values a
+  given seed produces for `Names::middle(Gender::Female)`, `person()` and
+  `full()`.
+- Allows `rasuvaeff/property-testing-core` `^0.7`.
+
 ## 0.2.2 — 2026-09-03
 
 - Keep `PersonName` validation compatible with the package Rector rules and

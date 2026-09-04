@@ -106,16 +106,25 @@ final class NamesTest
         Assert::true($shrunk['shrinks'] !== []);
         $reduced = 0;
 
+        $valueFirst = array_search($value->first, $firstNames, strict: true);
+        $valueLast = array_search($value->last, $lastNames, strict: true);
+
+        // array_search() returns int|false, and `false <= int` holds for every
+        // non-negative index: comparing the raw results would pass on a name
+        // that is not in the dataset at all, which is what this asserts against.
+        Assert::true(is_int($valueFirst));
+        Assert::true(is_int($valueLast));
+
         foreach ($shrunk['shrinks'] as $candidate) {
             Assert::instanceOf($candidate, PersonName::class);
-            Assert::true(
-                array_search($candidate->first, $firstNames, strict: true)
-                <= array_search($value->first, $firstNames, strict: true),
-            );
-            Assert::true(
-                array_search($candidate->last, $lastNames, strict: true)
-                <= array_search($value->last, $lastNames, strict: true),
-            );
+
+            $candidateFirst = array_search($candidate->first, $firstNames, strict: true);
+            $candidateLast = array_search($candidate->last, $lastNames, strict: true);
+
+            Assert::true(is_int($candidateFirst));
+            Assert::true(is_int($candidateLast));
+            Assert::true($candidateFirst <= $valueFirst);
+            Assert::true($candidateLast <= $valueLast);
 
             if ($candidate->first !== $value->first || $candidate->last !== $value->last) {
                 ++$reduced;

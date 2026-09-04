@@ -39,7 +39,7 @@ your project and fail at runtime.
 
 - PHP 8.3 – 8.5
 - `ext-mbstring`
-- `rasuvaeff/property-testing-core` `^0.4 || ^0.5 || ^0.6`
+- `rasuvaeff/property-testing-core` `^0.4 || ^0.5 || ^0.6 || ^0.7`
 
 ## Installation
 
@@ -126,7 +126,7 @@ Gen::map(Names::person(), static fn (PersonName $p): string => $p->last . ', ' .
 | Locale | Given names | Surnames | Patronymics |
 |---|---|---|---|
 | `en` | 50 male + 50 female | 100, shared by both genders | — |
-| `ru` | 50 male + 50 female | 50 + 50, index-aligned pairs | 40 + 40, index-aligned pairs |
+| `ru` | 50 male + 50 female | 50 + 50, index-aligned pairs | 40 + 40, the same stems in both lists |
 
 An unregistered locale raises `InvalidArgumentException` when the arbitrary is
 **built**, not when it first generates a value; the same is true for asking

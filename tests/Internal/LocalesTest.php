@@ -73,6 +73,17 @@ final class LocalesTest
         foreach ($dataset->maleLastNames as $surname) {
             Assert::false(str_ends_with($surname, 'а'));
         }
+
+        // Patronymics carry the same stems in both genders, but the female form
+        // does not grow from the male one by a constant suffix, so the lists are
+        // not index-aligned: each is ordered by its own length.
+        foreach ($dataset->femaleMiddleNames as $patronymic) {
+            Assert::true(str_ends_with($patronymic, 'на'));
+        }
+
+        foreach ($dataset->maleMiddleNames as $patronymic) {
+            Assert::true(str_ends_with($patronymic, 'ич'));
+        }
     }
 
     /**
@@ -126,9 +137,10 @@ final class LocalesTest
     {
         $lists = [$dataset->firstNames($gender), $dataset->lastNames($gender)];
 
-        // Patronymics are index-aligned male/female pairs of one stem, ordered
-        // by the male form; the female forms follow the same stems.
-        if ($dataset->hasMiddleNames() && $gender === Gender::Male) {
+        // Patronymics included for both genders: the two lists carry the same
+        // stems, each in its own length order, because a female form does not
+        // grow from its male form by a constant suffix.
+        if ($dataset->hasMiddleNames()) {
             $lists[] = $dataset->middleNames($gender);
         }
 

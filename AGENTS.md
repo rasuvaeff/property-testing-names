@@ -13,7 +13,7 @@ display forms; `Gender` is a two-case enum. Everything under
 per-locale data classes — is `@internal`.
 
 The package depends on `rasuvaeff/property-testing-core`
-(`^0.4 || ^0.5 || ^0.6`) and
+(`^0.4 || ^0.5 || ^0.6 || ^0.7`) and
 composes only its public API: `Gen::elements()`, `tuple()`, `map()`,
 `flatMap()`, `enum()`, `constant()`.
 
@@ -66,11 +66,19 @@ make release-check
   each list, so the shortest, most ordinary entries come first. Appending to
   the head changes what every counterexample minimises to; `LocalesTest`
   asserts the head is not longer than the tail.
-- **`ru` lists are index-aligned pairs.** Entry `i` of `MALE_LAST_NAMES` and of
-  `FEMALE_LAST_NAMES` is the same surname in two genders; same for
-  patronymics. Adding a surname means adding both forms at the same position —
-  `LocalesTest` asserts equal counts and that female entries end with `а` while
-  male ones do not.
+- **`ru` surnames are index-aligned pairs.** Entry `i` of `MALE_LAST_NAMES` and
+  of `FEMALE_LAST_NAMES` is the same surname in two genders, and adding a
+  surname means adding both forms at the same position — the female form is the
+  male one plus `а`, so one order satisfies both invariants. `LocalesTest`
+  asserts equal counts and that female entries end with `а` while male ones do
+  not.
+- **Patronymics are the same 40 stems in two lists, each in its own length
+  order.** A female patronymic does not grow from the male form by a constant
+  suffix (`Ильич` → `Ильинична`), so alignment and length order cannot both
+  hold; length order wins, because it is what shrinking walks. Adding a
+  patronymic means adding both forms, each at its own position. `LocalesTest`
+  asserts equal counts, the `ич`/`на` endings, and the length order of both
+  lists.
 - **A dataset change is a minor release**, never a patch: it changes the values
   a given seed produces, which is observable to every consumer with a
   regression corpus.
