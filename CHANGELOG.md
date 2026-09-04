@@ -1,6 +1,6 @@
 # Changelog
 
-## Unreleased
+## 0.3.0 — 2026-09-04
 
 - `ru` female patronymics are ordered by length like every other list, so a
   counterexample carrying one shrinks toward a shorter name instead of a longer
