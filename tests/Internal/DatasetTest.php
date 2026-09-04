@@ -62,19 +62,23 @@ final class DatasetTest
         // otherwise offer every entry twice. Picking is uniform over the index,
         // so that is a silent doubling of the entry's probability, the very
         // defect each individual list is checked against.
+        // Every list shares an entry with its counterpart, and shares it before
+        // an entry it does not: dropping either list's tail, or leaving the
+        // holes array_unique() punches in the keys, changes each result.
         $shared = new Dataset(
             locale: 'xx',
             maleFirstNames: ['Om', 'Sam'],
-            femaleFirstNames: ['Fa', 'Sam'],
+            femaleFirstNames: ['Sam', 'Fa'],
             maleLastNames: ['Mos', 'Kim'],
-            femaleLastNames: ['Mos', 'Kim'],
+            femaleLastNames: ['Mos', 'Lee'],
             maleMiddleNames: ['Omovich', 'Samich'],
-            femaleMiddleNames: ['Omovna', 'Samich'],
+            femaleMiddleNames: ['Samich', 'Omovna'],
         );
 
-        // First occurrence wins, so the shortest-first order survives.
+        // First occurrence wins, so the shortest-first order survives, and the
+        // result is a list — not the gapped keys array_unique() leaves behind.
         Assert::same($shared->firstNames(null), ['Om', 'Sam', 'Fa']);
-        Assert::same($shared->lastNames(null), ['Mos', 'Kim']);
+        Assert::same($shared->lastNames(null), ['Mos', 'Kim', 'Lee']);
         Assert::same($shared->middleNames(null), ['Omovich', 'Samich', 'Omovna']);
     }
 
