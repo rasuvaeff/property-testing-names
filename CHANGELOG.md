@@ -2,13 +2,14 @@
 
 ## 0.3.2 — 2026-09-05
 
-- Requires `rasuvaeff/property-testing-core` `^0.8`. The previous constraint
+- Requires `rasuvaeff/property-testing-core` `^0.9`. The previous constraint
   stopped at `^0.7`, which made the package uninstallable beside either
-  adapter: both require core `^0.8`, and a set of generators for property
-  tests has no use without one. The enumerated form (`^0.4 || ^0.5 || ...`)
-  is gone with it — it had to be widened by hand on every core release, and
-  was not, three releases running.
-- Tests run against `rasuvaeff/property-testing-testo` `^0.8` instead of two
+  adapter: a set of generators for property tests has no use without one, and
+  both had already moved on. The enumerated form (`^0.4 || ^0.5 || ...`) is
+  gone with it — it had to be widened by hand on every core release, and was
+  not, three releases running. `^0.9` is what both adapters require today, and
+  moving with them is the whole fix.
+- Tests run against `rasuvaeff/property-testing-testo` `^0.9` instead of two
   minors behind.
 
 ## 0.3.1 — 2026-09-04
