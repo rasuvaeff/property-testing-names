@@ -39,7 +39,7 @@ your project and fail at runtime.
 
 - PHP 8.3 – 8.5
 - `ext-mbstring`
-- `rasuvaeff/property-testing-core` `^0.4 || ^0.5 || ^0.6 || ^0.7`
+- `rasuvaeff/property-testing-core` `^0.8`
 
 ## Installation
 
