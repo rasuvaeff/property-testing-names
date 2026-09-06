@@ -2,6 +2,9 @@
 
 ## Unreleased
 
+- `static-analysis.yml` pins `actions/cache` at the same SHA `build.yml` uses
+  (v6.1.0). It sat at v4 — the only place this package's workflows disagreed
+  with each other and with `templates/`.
 - `Names::locales()` returns the registered locale codes
   (`non-empty-list<non-empty-string>`). Until now the list was reachable only
   by catching `InvalidArgumentException` and parsing its message, because
