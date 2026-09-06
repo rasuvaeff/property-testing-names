@@ -12,9 +12,10 @@ display forms; `Gender` is a two-case enum. Everything under
 `Rasuvaeff\PropertyTesting\Names\Internal\` — `Dataset`, `Locales` and the
 per-locale data classes — is `@internal`.
 
-The package depends on `rasuvaeff/property-testing-core`
-(`^0.4 || ^0.5 || ^0.6 || ^0.7`) and
-composes only its public API: `Gen::elements()`, `tuple()`, `map()`,
+The package depends on `rasuvaeff/property-testing-core` — read the constraint
+out of `composer.json` rather than from here, because a version enumeration
+written into prose is a third thing to keep in step and has now fallen behind
+three times. It composes only the engine's public API: `Gen::elements()`, `tuple()`, `map()`,
 `flatMap()`, `enum()`, `constant()`.
 
 ## Golden rules

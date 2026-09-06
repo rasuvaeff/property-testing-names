@@ -46,7 +46,7 @@ final readonly class Dataset
         return match ($gender) {
             Gender::Male => $this->maleFirstNames,
             Gender::Female => $this->femaleFirstNames,
-            null => self::pool([...$this->maleFirstNames, ...$this->femaleFirstNames]),
+            null => $this->pool([...$this->maleFirstNames, ...$this->femaleFirstNames]),
         };
     }
 
@@ -58,7 +58,7 @@ final readonly class Dataset
         return match ($gender) {
             Gender::Male => $this->maleLastNames,
             Gender::Female => $this->femaleLastNames,
-            null => self::pool([...$this->maleLastNames, ...$this->femaleLastNames]),
+            null => $this->pool([...$this->maleLastNames, ...$this->femaleLastNames]),
         };
     }
 
@@ -79,7 +79,7 @@ final readonly class Dataset
             );
         }
 
-        return self::pool($names);
+        return $this->pool($names);
     }
 
     public function hasMiddleNames(): bool
@@ -101,7 +101,7 @@ final readonly class Dataset
      *
      * @return non-empty-list<non-empty-string>
      */
-    private static function pool(array $names): array
+    private function pool(array $names): array
     {
         return array_values(array_unique($names));
     }

@@ -300,4 +300,17 @@ final class NamesTest
         yield 'registered language, unregistered tag' => ['en-US'];
         yield 'russian region tag' => ['ru-RU'];
     }
+
+    /**
+     * The registered codes, and every one of them usable: a list that named a
+     * locale the factories reject would be worse than no list at all.
+     */
+    public function localesAreExactlyTheOnesTheFactoriesAccept(): void
+    {
+        Assert::same(Names::locales(), Locales::registered());
+
+        foreach (Names::locales() as $locale) {
+            Assert::true(Names::first($locale) instanceof ArbitraryInterface);
+        }
+    }
 }

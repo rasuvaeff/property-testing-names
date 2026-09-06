@@ -1,5 +1,26 @@
 # Changelog
 
+## Unreleased
+
+- `Names::locales()` returns the registered locale codes
+  (`non-empty-list<non-empty-string>`). Until now the list was reachable only
+  by catching `InvalidArgumentException` and parsing its message, because
+  `Internal\Locales::registered()` is `@internal` — so a matrix over the
+  supported locales had to hardcode `['en', 'ru']` and would silently stop
+  covering one added later. There is still no registration API: a mutable
+  registry would make generated data depend on test execution order
+  ([#27](https://github.com/rasuvaeff/property-testing-names/issues/27)).
+- Accepts `rasuvaeff/property-testing-core` `^0.10` alongside `^0.9`.
+- `composer rector` is green: `Dataset::pool()` is an instance method, as
+  `LocallyCalledStaticMethodToNonStaticRector` asks. It had been red since
+  `pool()` was introduced in 0.3.1 — which means neither 0.3.1 nor 0.3.2 ran
+  `composer release-check` before their tags, because `composer build` does
+  not run rector.
+- `AGENTS.md` no longer restates the core constraint as a version enumeration.
+  It said `^0.4 || ^0.5 || ^0.6 || ^0.7` while `composer.json` said `^0.9` —
+  the third time that copy fell behind, so it now points at `composer.json`
+  instead.
+
 ## 0.3.2 — 2026-09-05
 
 - Requires `rasuvaeff/property-testing-core` `^0.9`. The previous constraint
