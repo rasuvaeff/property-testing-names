@@ -11,7 +11,7 @@ composer require --dev rasuvaeff/property-testing-names
 
 ## Rules
 
-- PHP 8.3–8.5, `ext-mbstring`, core `^0.9`.
+- PHP 8.3–8.5, `ext-mbstring`, core `^0.9 || ^0.10`.
 - There is **no** `Gen::name()`. The entry point is the `Names::` facade; core
   keeps only format-derived generators (`Gen::email()`, `Gen::uuid()`, …).
 - Registered locales: `en`, `ru`. Anything else — including `'EN'`, `'en-US'`,
@@ -44,6 +44,7 @@ Names::full(string $locale = 'en', ?Gender $gender = null, bool $middle = false)
 
 // ArbitraryInterface<PersonName>
 Names::person(string $locale = 'en', ?Gender $gender = null, bool $middle = false);
+Names::locales();  // non-empty-list<non-empty-string>, the registered codes -- NOT an arbitrary
 
 Names::DEFAULT_LOCALE;   // 'en'
 Gender::Male; Gender::Female;   // declaration order = shrink order

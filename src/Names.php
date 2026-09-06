@@ -41,6 +41,22 @@ final readonly class Names
     }
 
     /**
+     * The locale codes every factory here accepts, in registration order.
+     *
+     * A consumer building a matrix over the supported locales — a property run
+     * once per locale, a form fixture covering each — would otherwise have to
+     * hardcode the list and silently stop covering one added later. There is
+     * no registration API by design: a mutable registry would make generated
+     * data depend on test execution order.
+     *
+     * @return non-empty-list<non-empty-string>
+     */
+    public static function locales(): array
+    {
+        return Locales::registered();
+    }
+
+    /**
      * Whole names with grammatically consistent parts: `$first`, `$middle` and
      * `$last` are drawn from the same gendered subset of the locale.
      *

@@ -39,7 +39,7 @@
 
 - PHP 8.3 – 8.5
 - `ext-mbstring`
-- `rasuvaeff/property-testing-core` `^0.9`
+- `rasuvaeff/property-testing-core` `^0.9 || ^0.10`
 
 ## Установка
 
@@ -104,6 +104,7 @@ public static function displayNameFitsTheColumnGenerators(): array
 | `Names::middle(string $locale, ?Gender $gender = null)` | `ArbitraryInterface<non-empty-string>` | Отчества; локаль **обязательна** — набор не универсален |
 | `Names::full(string $locale = 'en', ?Gender $gender = null, bool $middle = false)` | `ArbitraryInterface<non-empty-string>` | `Имя [Отчество] Фамилия`, рендер из `person()` |
 | `Names::person(string $locale = 'en', ?Gender $gender = null, bool $middle = false)` | `ArbitraryInterface<PersonName>` | Части, собранные вместе |
+| `Names::locales()` | `non-empty-list<non-empty-string>` | Коды локалей, которые принимают фабрики выше — не arbitrary |
 
 `PersonName` — `final readonly class` с полями `$first`, `$middle` (nullable),
 `$last`, `$gender` и тремя формами отображения:
@@ -136,6 +137,19 @@ Gen::map(Names::person(), static fn (PersonName $p): string => $p->last . ', ' .
 **построения** arbitrary, а не при первой генерации значения; то же самое —
 при запросе отчеств у `en`. Теги локалей сравниваются буквально: `'EN'`,
 `'en-US'` и `'en '` — неизвестны.
+
+`Names::locales()` возвращает зарегистрированные коды, поэтому матрицу по
+поддерживаемым локалям не нужно хардкодить, и она продолжит покрывать локаль,
+добавленную позже:
+
+```php
+foreach (Names::locales() as $locale) {
+    // по одному прогону property на каждую поддерживаемую локаль
+}
+```
+
+API регистрации нет намеренно: изменяемый реестр поставил бы генерируемые
+данные в зависимость от порядка выполнения тестов.
 
 ### Согласованность рода
 
