@@ -1,6 +1,6 @@
 # Changelog
 
-## Unreleased
+## 0.4.0 — 2026-09-12
 
 - `static-analysis.yml` pins `actions/cache` at the same SHA `build.yml` uses
   (v6.1.0). It sat at v4 — the only place this package's workflows disagreed
@@ -13,7 +13,9 @@
   covering one added later. There is still no registration API: a mutable
   registry would make generated data depend on test execution order
   ([#27](https://github.com/rasuvaeff/property-testing-names/issues/27)).
-- Accepts `rasuvaeff/property-testing-core` `^0.10` alongside `^0.9`.
+- Accepts `rasuvaeff/property-testing-core` `^0.10` alongside `^0.9`; the
+  dev-only Testo adapter constraint widens the same way, so the suite runs
+  against core 0.10 rather than resolving both back to 0.9.
 - `composer rector` is green: `Dataset::pool()` is an instance method, as
   `LocallyCalledStaticMethodToNonStaticRector` asks. It had been red since
   `pool()` was introduced in 0.3.1 — which means neither 0.3.1 nor 0.3.2 ran
