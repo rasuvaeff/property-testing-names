@@ -1,5 +1,40 @@
 # Changelog
 
+All notable changes to this project will be documented in this file.
+
+The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
+and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
+
+## Unreleased
+
+- `Gender` is a string-backed enum (`Male = 'male'`, `Female = 'female'`), so
+  `json_encode()` of a `PersonName` yields plain data instead of `false`
+  ("Non-backed enums have no default serialization"). Declaration order,
+  `Gen::enum()` shrink order and the regression corpus — which keys enum cases
+  by name — are unchanged. Backing an enum is free before 1.0 and a break
+  after it ([#31](https://github.com/rasuvaeff/property-testing-names/issues/31)).
+- `PersonName` rejects a part that is empty after `trim()`, not only `''`, and
+  the message names the part: `First name must not be empty`, `Middle name must
+  not be empty`, `Last name must not be empty`. A whitespace-only part used to
+  be accepted and rendered `' . Smith'`
+  ([#32](https://github.com/rasuvaeff/property-testing-names/issues/32)).
+  Consequence: `Gen::forClass(PersonName::class)` builds parts from
+  `non-empty-string`, which includes whitespace-only strings, so a bare call now
+  fails the run on such a draw or shrink candidate. Pass `skipInvalid: true`, or
+  — the intended form — `Names::person()` as the override for the parameter
+  that holds the name.
+- `PersonName` implements `Stringable`; `(string) $name` is `full()`.
+- README, README.ru and `llms.txt` say how a `PersonName` counterexample is
+  stored in the regression corpus (as a seed entry, which a dataset minor
+  silently re-points at another person; string arguments survive as values), that
+  `CounterExample::toExamplesCode()` throws on it, and that
+  `Gen::forClass(PersonName::class)` does not draw from the datasets.
+- `AGENTS.md` no longer points at a plan file that does not exist, nor lists
+  `Gen::tuple()` among the APIs the package composes (it deliberately nests
+  `flatMap()` instead); the Keep-a-Changelog preamble sits under the title
+  rather than between 0.2.0 and 0.1.3; `examples/person-and-display-forms.php`
+  uses a seed whose first block shows both genders.
+
 ## 0.4.0 — 2026-09-12
 
 - `static-analysis.yml` pins `actions/cache` at the same SHA `build.yml` uses
@@ -81,11 +116,6 @@
 - Requires `rasuvaeff/property-testing-core` `^0.4 || ^0.5` (was `^0.1 || … || ^0.4`):
   the older lines have no `Gen::forClass()`, which the package now tests
   itself against; 0.5 is the line the adapters moved to.
-
-All notable changes to this project will be documented in this file.
-
-The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
-and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## 0.1.3 — 2026-08-20
 

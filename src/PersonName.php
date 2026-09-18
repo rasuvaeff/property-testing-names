@@ -13,9 +13,12 @@ namespace Rasuvaeff\PropertyTesting\Names;
  * `null` unless the generator was asked for it; for `ru` it holds a
  * patronymic.
  *
+ * The parts are public and the gender is string-backed, so `json_encode()`
+ * renders a name as plain data; in string context it is {@see full()}.
+ *
  * @api
  */
-final readonly class PersonName
+final readonly class PersonName implements \Stringable
 {
     /**
      * @param non-empty-string $first
@@ -28,22 +31,34 @@ final readonly class PersonName
         public string $last,
         public Gender $gender,
     ) {
-        // The psalm types promise non-empty parts; the runtime guard is for
-        // callers static analysis does not see, and lives behind a plain
-        // string parameter so the promise and the check do not contradict.
-        $this->guardNotEmpty($first, 'Person name parts must not be empty');
-        $this->guardNotEmpty($last, 'Person name parts must not be empty');
+        // The psalm types promise non-empty parts; the runtime guard is wider
+        // (a part that is only whitespace is a non-empty-string and still
+        // renders into a broken display form) and lives behind a plain string
+        // parameter so the promise and the check do not contradict.
+        $this->guardNotBlank($first, 'First name');
 
         if ($middle !== null) {
-            $this->guardNotEmpty($middle, 'Middle name must be null or a non-empty string');
+            $this->guardNotBlank($middle, 'Middle name');
+        }
+
+        $this->guardNotBlank($last, 'Last name');
+    }
+
+    private function guardNotBlank(string $part, string $label): void
+    {
+        if (trim($part) === '') {
+            throw new \InvalidArgumentException($label . ' must not be empty');
         }
     }
 
-    private function guardNotEmpty(string $part, string $message): void
+    /**
+     * The same as {@see full()}, so a name drops into string contexts —
+     * `sprintf`, string columns, assertion messages — without a method call.
+     */
+    #[\Override]
+    public function __toString(): string
     {
-        if ($part === '') {
-            throw new \InvalidArgumentException($message);
-        }
+        return $this->full();
     }
 
     /**

@@ -8,14 +8,15 @@ Person-name arbitraries for the property-testing family: given names, surnames
 and patronymics for `en` and `ru`, exposed through the static facade
 `Rasuvaeff\PropertyTesting\Names\Names` (`first`, `last`, `middle`, `full`,
 `person`). `PersonName` is the value object holding the parts plus three
-display forms; `Gender` is a two-case enum. Everything under
+display forms (`Stringable`, JSON-serialisable); `Gender` is a two-case
+string-backed enum. Everything under
 `Rasuvaeff\PropertyTesting\Names\Internal\` — `Dataset`, `Locales` and the
 per-locale data classes — is `@internal`.
 
 The package depends on `rasuvaeff/property-testing-core` — read the constraint
 out of `composer.json` rather than from here, because a version enumeration
 written into prose is a third thing to keep in step and has now fallen behind
-three times. It composes only the engine's public API: `Gen::elements()`, `tuple()`, `map()`,
+three times. It composes only the engine's public API: `Gen::elements()`, `map()`,
 `flatMap()`, `enum()`, `constant()`.
 
 ## Golden rules
@@ -28,8 +29,7 @@ three times. It composes only the engine's public API: `Gen::elements()`, `tuple
    optional package would pass `composer-require-checker` in a consumer and
    fail at runtime, and a public `Dataset` would freeze the data shape into
    user code before 1.0. Custom locales are a feature request with a real user
-   behind it, not a speculative escape hatch. See
-   `property-testing-names-plan.md` in the monorepo root.
+   behind it, not a speculative escape hatch.
 4. **Preserve the public contract.** Update README + README.ru + llms.txt +
    tests with any API change.
 

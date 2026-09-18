@@ -11,7 +11,7 @@ require dirname(__DIR__) . '/vendor/autoload.php';
 
 // person() keeps the parts, so every display form is derived from one
 // grammatically consistent draw instead of three independent ones.
-foreach (Gen::sample(Names::person('ru', middle: true), 4, 11) as $person) {
+foreach (Gen::sample(Names::person('ru', middle: true), 4, 1) as $person) {
     \assert($person instanceof PersonName);
 
     // printf padding counts bytes, not characters, so Cyrillic columns are

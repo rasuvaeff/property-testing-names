@@ -25,6 +25,17 @@ composer require --dev rasuvaeff/property-testing-names
 - Values shrink toward the earliest (shortest) dataset entries.
 - Data is synthetic; dataset changes ship as minor releases because they change
   what a given seed produces.
+- Regression corpus: a counterexample whose argument is a `PersonName` is stored
+  as a *seed* entry (the core codec encodes no objects but enums), and a dataset
+  minor makes that seed replay a different person. String arguments
+  (`Names::full()`/`first()`/`last()`) are stored as *values* and replay through
+  any release — use them when the corpus must survive upgrades.
+  `CounterExample::toExamplesCode()` throws on a `PersonName` argument.
+- `Gen::forClass(PersonName::class)` does not use the datasets: it builds parts
+  from the constructor's `non-empty-string` annotations (arbitrary text, including
+  whitespace-only strings the constructor refuses). For a class that holds a
+  `PersonName`, pass `Names::person()` as the override:
+  `Gen::forClass(Profile::class, ['name' => Names::person('ru')])`.
 - `Rasuvaeff\PropertyTesting\Names\Internal\*` is `@internal`: no custom
   datasets, no runtime locale registration.
 
@@ -47,20 +58,23 @@ Names::person(string $locale = 'en', ?Gender $gender = null, bool $middle = fals
 Names::locales();  // non-empty-list<non-empty-string>, the registered codes -- NOT an arbitrary
 
 Names::DEFAULT_LOCALE;   // 'en'
-Gender::Male; Gender::Female;   // declaration order = shrink order
+Gender::Male; Gender::Female;   // string-backed: 'male', 'female'; declaration order = shrink order
 ```
 
-`PersonName` (`final readonly`): `$first`, `?$middle`, `$last`, `$gender`.
+`PersonName` (`final readonly`, `Stringable`): `$first`, `?$middle`, `$last`, `$gender`.
 
 ```php
 $p = new PersonName('Иван', 'Иванович', 'Иванов', Gender::Male);
 $p->full();          // 'Иван Иванович Иванов'   (en: 'John Smith')
+(string) $p;         // same as full()
 $p->initialLast();   // 'И. Иванов'              (en: 'J. Smith')
 $p->lastInitials();  // 'Иванов И. И.'           (en: 'Smith J.')
+json_encode($p);     // {"first":"Иван","middle":"Иванович","last":"Иванов","gender":"male"}
 ```
 
-The constructor throws `InvalidArgumentException` on an empty `$first`/`$last`
-and on `$middle === ''` (use `null` for "no middle name").
+The constructor throws `InvalidArgumentException` on a `$first`/`$middle`/`$last`
+that is empty or whitespace-only, naming the part (`First name must not be
+empty`, `Middle name …`, `Last name …`); use `null` for "no middle name".
 
 ## Use in a property test (Testo)
 
