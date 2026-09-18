@@ -20,8 +20,8 @@ use Testo\Test;
 
 #[Test]
 #[Covers(PersonName::class)]
-// Gender has no behaviour of its own; its contract is the declaration order
-// (shrinking runs toward the first case) asserted below, plus the gendered
+// Gender's contract is the declaration order (shrinking runs toward the first
+// case) and the string backing values asserted below, plus the gendered
 // lookups exercised through every PersonName built here.
 #[Covers(Gender::class)]
 final class PersonNameTest
