@@ -14,7 +14,6 @@ use Rasuvaeff\PropertyTesting\Names\PersonName;
 use Rasuvaeff\PropertyTesting\Property;
 use Rasuvaeff\PropertyTesting\Random;
 use Testo\Assert;
-use Testo\Assert\ExpectException;
 use Testo\Codecov\Covers;
 use Testo\Data\DataProvider;
 use Testo\Test;
@@ -35,6 +34,7 @@ final class PersonNameTest
         string $lastInitials,
     ): void {
         Assert::same($name->full(), $full);
+        Assert::same((string) $name, $full);
         Assert::same($name->initialLast(), $initialLast);
         Assert::same($name->lastInitials(), $lastInitials);
     }
@@ -70,19 +70,21 @@ final class PersonNameTest
         ];
     }
 
-    public function isBuildableFromItsSignatureByForClass(): void
+    public function isBuildableFromItsSignatureWhenRejectionsAreSkipped(): void
     {
         // The psalm types promise non-empty parts, so forClass draws from
-        // non-empty generators and the constructor accepts every instance —
-        // including while shrinking, where a refused candidate would be lost.
+        // non-empty generators; a whitespace-only string is one of those, and
+        // the constructor refuses it. skipInvalid redraws a refused argument
+        // set and prunes refused shrink candidates instead of failing the run.
         $random = new Random(11);
-        $arbitrary = Gen::forClass(PersonName::class);
+        $arbitrary = Gen::forClass(PersonName::class, skipInvalid: true);
 
         for ($i = 0; $i < 200; ++$i) {
             $node = $arbitrary->generate($random);
 
             Assert::instanceOf($node->value, PersonName::class);
-            Assert::true($node->value->first !== '' && $node->value->last !== '' && $node->value->middle !== '');
+            Assert::true(trim($node->value->first) !== '' && trim($node->value->last) !== '');
+            Assert::true($node->value->middle === null || trim($node->value->middle) !== '');
 
             foreach ($node->shrinks() as $candidate) {
                 Assert::instanceOf($candidate->value, PersonName::class);
@@ -100,22 +102,68 @@ final class PersonNameTest
         Assert::same($name->gender, Gender::Female);
     }
 
-    #[ExpectException(\InvalidArgumentException::class)]
-    public function rejectsEmptyFirstName(): void
+    #[DataProvider('blankPartProvider')]
+    public function rejectsBlankParts(string $first, ?string $middle, string $last, string $message): void
     {
-        new PersonName('', null, 'Smith', Gender::Male);
+        try {
+            new PersonName($first, $middle, $last, Gender::Male);
+            Assert::fail('A blank part was accepted');
+        } catch (\InvalidArgumentException $exception) {
+            Assert::same($exception->getMessage(), $message);
+        }
     }
 
-    #[ExpectException(\InvalidArgumentException::class)]
-    public function rejectsEmptyLastName(): void
+    public static function blankPartProvider(): iterable
     {
-        new PersonName('John', null, '', Gender::Male);
+        yield 'empty first name' => ['', null, 'Smith', 'First name must not be empty'];
+        yield 'whitespace first name' => [' ', null, 'Smith', 'First name must not be empty'];
+        yield 'tab first name' => ["\t", null, 'Smith', 'First name must not be empty'];
+        yield 'empty middle name' => ['John', '', 'Smith', 'Middle name must not be empty'];
+        yield 'whitespace middle name' => ['John', '  ', 'Smith', 'Middle name must not be empty'];
+        yield 'empty last name' => ['John', null, '', 'Last name must not be empty'];
+        yield 'newline last name' => ['John', null, "\n ", 'Last name must not be empty'];
+        yield 'first name reported before the others' => [' ', ' ', ' ', 'First name must not be empty'];
+        yield 'middle name reported before the last' => ['John', ' ', ' ', 'Middle name must not be empty'];
     }
 
-    #[ExpectException(\InvalidArgumentException::class)]
-    public function rejectsEmptyMiddleName(): void
+    public function acceptsPartsPaddedWithWhitespaceAsGiven(): void
     {
-        new PersonName('John', '', 'Smith', Gender::Male);
+        // Only blank parts are rejected; padding is the caller's data and is
+        // neither trimmed nor refused.
+        $name = new PersonName(' John', null, 'Smith ', Gender::Male);
+
+        Assert::same($name->first, ' John');
+        Assert::same($name->last, 'Smith ');
+    }
+
+    public function isStringableAsItsFullForm(): void
+    {
+        $name = new PersonName('Иван', 'Иванович', 'Иванов', Gender::Male);
+
+        Assert::instanceOf($name, \Stringable::class);
+        Assert::same((string) $name, 'Иван Иванович Иванов');
+        Assert::same(sprintf('%s', $name), 'Иван Иванович Иванов');
+    }
+
+    public function serialisesToJsonAsPlainData(): void
+    {
+        $name = new PersonName('Иван', 'Иванович', 'Иванов', Gender::Male);
+
+        Assert::same(
+            json_encode($name, JSON_THROW_ON_ERROR | JSON_UNESCAPED_UNICODE),
+            '{"first":"Иван","middle":"Иванович","last":"Иванов","gender":"male"}',
+        );
+        Assert::same(
+            json_encode(new PersonName('Emma', null, 'Smith', Gender::Female), JSON_THROW_ON_ERROR),
+            '{"first":"Emma","middle":null,"last":"Smith","gender":"female"}',
+        );
+    }
+
+    public function genderIsStringBacked(): void
+    {
+        Assert::same(Gender::Male->value, 'male');
+        Assert::same(Gender::Female->value, 'female');
+        Assert::same(Gender::from('female'), Gender::Female);
     }
 
     /**
