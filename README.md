@@ -108,7 +108,12 @@ public static function displayNameFitsTheColumnGenerators(): array
 | `Names::locales()` | `non-empty-list<non-empty-string>` | The locale codes the factories above accept — not an arbitrary |
 
 `PersonName` is a `final readonly class` with `$first`, `$middle` (nullable),
-`$last`, `$gender` and three display forms:
+`$last`, `$gender` and three display forms. It is `Stringable` — `(string) $p`
+is `full()` — and `json_encode()` renders it as plain data, because `Gender`
+is a string-backed enum (`'male'`, `'female'`). The constructor rejects a part
+that is empty or whitespace-only with `InvalidArgumentException` naming the
+part (`First name must not be empty`); `$middle` is `null` for "no middle
+name", never `''`.
 
 | Method | `en` | `ru` |
 |---|---|---|
@@ -120,6 +125,19 @@ Any other form is one `Gen::map()` away:
 
 ```php
 Gen::map(Names::person(), static fn (PersonName $p): string => $p->last . ', ' . $p->first);
+```
+
+### Objects that hold a name
+
+`Gen::forClass(PersonName::class)` does not use the datasets: it reads the
+constructor's `non-empty-string` annotations and builds names from arbitrary
+text — including whitespace-only strings, which the constructor refuses. When
+a class under test holds a `PersonName`, pass `Names::person()` as the override
+for that parameter so the value comes from the lists and shrinks toward a
+plain name:
+
+```php
+Gen::forClass(Profile::class, ['name' => Names::person('ru', middle: true)]);
 ```
 
 ### Locales
@@ -160,8 +178,8 @@ must agree, draw them together:
 $person = Names::person('ru', middle: true);   // Мария Ивановна Иванова
 ```
 
-`Gender` has two cases, `Male` and `Female`, declared in that order because
-shrinking walks toward the first case.
+`Gender` has two cases, `Male` (`'male'`) and `Female` (`'female'`), declared
+in that order because shrinking walks toward the first case.
 
 ## Security
 
@@ -173,6 +191,15 @@ should validate them like any other user data.
 
 Dataset changes alter the values a given seed produces, so they ship as
 **minor** releases and are listed in [CHANGELOG.md](CHANGELOG.md).
+
+That matters for the regression corpus. A counterexample whose argument is a
+`PersonName` is stored as a *seed* entry — the core codec has no data
+representation for objects other than enums — and a dataset minor makes that
+seed replay a different person, so the recorded failure is silently no longer
+the one that was found. A counterexample made of strings (`Names::full()`,
+`first()`, `last()`) is stored as *values* and replays through any release; if
+the corpus has to survive upgrades, write the property over those. For the same
+reason `CounterExample::toExamplesCode()` throws on a `PersonName` argument.
 
 ## Examples
 
