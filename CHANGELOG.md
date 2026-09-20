@@ -2,6 +2,18 @@
 
 All notable changes to this project will be documented in this file.
 
+## 1.0.0 — 2026-09-20
+
+The stability release, in step with `rasuvaeff/property-testing-core` 1.0.0.
+The surface is that of 0.5.2, unchanged: `Names::first()`/`last()`/`middle()`/
+`full()`/`person()`, `Names::locales()`, `PersonName`, `Gender`, the `en` and
+`ru` datasets and their shrink order toward the shortest entry. A project on
+`^0.5` upgrades by widening the constraint to `^1.0`.
+
+- Requires `rasuvaeff/property-testing-core` `^1.0` (compatibility policy
+  §8: a caret on the engine's current major); the dev requirement on
+  `rasuvaeff/property-testing-testo` is `^1.0` likewise.
+
 ## 0.5.2 — 2026-09-20
 
 - **Changed.** Accepts `rasuvaeff/property-testing-core` `^0.12` (and the
