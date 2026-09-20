@@ -2,7 +2,7 @@
 
 All notable changes to this project will be documented in this file.
 
-## Unreleased
+## 0.5.2 — 2026-09-20
 
 - **Changed.** Accepts `rasuvaeff/property-testing-core` `^0.12` (and the
   `-testo` adapter's `^0.12`) alongside the earlier lines. Nothing in 0.12.0
