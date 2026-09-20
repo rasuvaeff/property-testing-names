@@ -2,6 +2,15 @@
 
 All notable changes to this project will be documented in this file.
 
+## Unreleased
+
+- **Changed.** Accepts `rasuvaeff/property-testing-core` `^0.12` (and the
+  `-testo` adapter's `^0.12`) alongside the earlier lines. Nothing in 0.12.0
+  reaches this package: the release is additive (exhaustive mode, targeted
+  search, the rule-based façade, `Gen::composite()`, `Gen::withEdgeCases()`,
+  `Gen::randomEngine()`, `Gen::note()`, `Classify::tabulate()`, flaky
+  replays), and the suite is green against it unchanged.
+
 ## 0.5.1 — 2026-09-19
 
 - **Changed.** Accepts `rasuvaeff/property-testing-core` `^0.11` alongside `^0.9`/`^0.10`. Nothing in 0.11.0 reaches this package: the release is additive (the `PropertyTestingException` marker, `AssumptionSkipped` promoted to `@api`, `Gen::stringOf()` defaults, docblock reading in `Gen::forClass()`), and the suite is green against it unchanged.
