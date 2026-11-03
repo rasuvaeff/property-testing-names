@@ -2,6 +2,10 @@
 
 All notable changes to this project will be documented in this file.
 
+## Unreleased
+
+- Mutation testing now counts uncovered code (`infection --with-uncovered`); `PublicVisibility`/`ProtectedVisibility` mutators and default-parameter signature lines are ignored. No source changes.
+
 ## 1.0.0 — 2026-09-20
 
 The stability release, in step with `rasuvaeff/property-testing-core` 1.0.0.
