@@ -2,8 +2,10 @@
 
 All notable changes to this project will be documented in this file.
 
-## Unreleased
+## 1.0.1 — 2026-11-21
 
+- Internal: removed `Internal\Dataset::hasMiddleNames()`, which only the tests
+  called (#41). No change to the public surface.
 - Mutation testing now counts uncovered code (`infection --with-uncovered`); `PublicVisibility`/`ProtectedVisibility` mutators and default-parameter signature lines are ignored. No source changes.
 
 ## 1.0.0 — 2026-09-20

@@ -82,11 +82,6 @@ final readonly class Dataset
         return $this->pool($names);
     }
 
-    public function hasMiddleNames(): bool
-    {
-        return $this->maleMiddleNames !== [] && $this->femaleMiddleNames !== [];
-    }
-
     /**
      * The pool a generator picks from, with duplicates removed.
      *
