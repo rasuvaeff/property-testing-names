@@ -82,13 +82,6 @@ final class DatasetTest
         Assert::same($shared->middleNames(null), ['Omovich', 'Petrovich', 'Samich', 'Omovna']);
     }
 
-    public function reportsMiddleNameSupport(): void
-    {
-        Assert::true($this->dataset->hasMiddleNames());
-        Assert::false($this->withoutMiddleNames()->hasMiddleNames());
-        Assert::false($this->maleMiddleNamesOnly()->hasMiddleNames());
-    }
-
     public function middleNamesFailWithTheLocaleInTheMessage(): void
     {
         try {

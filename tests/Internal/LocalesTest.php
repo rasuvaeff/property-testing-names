@@ -53,7 +53,8 @@ final class LocalesTest
     {
         $dataset = Locales::get('en');
 
-        Assert::false($dataset->hasMiddleNames());
+        Assert::same($dataset->maleMiddleNames, []);
+        Assert::same($dataset->femaleMiddleNames, []);
         Assert::same($dataset->maleLastNames, $dataset->femaleLastNames);
     }
 
@@ -61,7 +62,7 @@ final class LocalesTest
     {
         $dataset = Locales::get('ru');
 
-        Assert::true($dataset->hasMiddleNames());
+        Assert::true($dataset->maleMiddleNames !== []);
         Assert::same(count($dataset->maleLastNames), count($dataset->femaleLastNames));
         Assert::same(count($dataset->maleMiddleNames), count($dataset->femaleMiddleNames));
 
@@ -169,7 +170,7 @@ final class LocalesTest
         // Patronymics included for both genders: the two lists carry the same
         // stems, each in its own length order, because a female form does not
         // grow from its male form by a constant suffix.
-        if ($dataset->hasMiddleNames()) {
+        if ($dataset->maleMiddleNames !== [] && $dataset->femaleMiddleNames !== []) {
             $lists[] = $dataset->middleNames($gender);
         }
 
