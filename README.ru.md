@@ -37,7 +37,7 @@
 
 ## Требования
 
-- PHP 8.3 – 8.5
+- PHP 8.3 – 8.6
 - `ext-mbstring`
 - `rasuvaeff/property-testing-core` `^1.0`
 
