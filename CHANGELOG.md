@@ -2,7 +2,7 @@
 
 All notable changes to this project will be documented in this file.
 
-## Unreleased
+## 1.0.2 — 2026-11-21
 
 - **Changed:** PHP 8.6 is supported: the `php` constraint is widened to
   `8.3 - 8.6` (#43). CI runs PHP 8.6 as a regular matrix entry; the
