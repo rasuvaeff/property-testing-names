@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file.
 
+## Unreleased
+
+- **Changed:** PHP 8.6 is supported: the `php` constraint is widened to
+  `8.3 - 8.6` (#43). CI runs PHP 8.6 as a regular matrix entry; the
+  backward-compatibility job runs on PHP 8.5.
+
 ## 1.0.1 — 2026-11-21
 
 - Internal: removed `Internal\Dataset::hasMiddleNames()`, which only the tests
